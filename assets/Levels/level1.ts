@@ -1,5 +1,5 @@
-import { TILE_TYPE_ENUM } from "../../Enums";
-import { ILevel } from "./index";
+import { TILE_TYPE_ENUM } from '../Enums'
+import { ILevel } from './index'
 
 const mapInfo: ILevel['mapInfo'] = [
   [
@@ -422,11 +422,10 @@ const mapInfo: ILevel['mapInfo'] = [
       type: TILE_TYPE_ENUM.CLIFF_RIGHT,
     },
   ],
-];
+]
 
-
-const  level: ILevel = {
-      mapInfo,
+const level: ILevel = {
+  mapInfo,
 }
 
-export default level;
+export default level

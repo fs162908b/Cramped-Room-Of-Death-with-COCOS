@@ -1,5 +1,4 @@
 {
-  "files.autoSave": "off",
   "files.associations": {
     ".code-workspace": "jsonc",
     ".babelrc": "json",
@@ -86,8 +85,5 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ],
-  "eslint.enable": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  ]
 }
-
