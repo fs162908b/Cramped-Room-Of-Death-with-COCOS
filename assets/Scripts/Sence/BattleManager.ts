@@ -6,6 +6,7 @@ import DataManager from '../../Runtime/DataManager'
 import { TILE_WIDTH, TILE_HEIGHT } from '../Tile/TileManager'
 import { Event_ENUM } from '../../Enums'
 import EventManager from '../../Runtime/EventManager'
+import { PlayerManager } from '../Player/PlayerManager'
 const { ccclass, property } = _decorator
 
 @ccclass('BattleManager')
@@ -37,6 +38,7 @@ export class BattleManager extends Component {
       DataManager.Instance.mapColCount = this.level.mapInfo[0].length || 0
 
       this.generateTileMap()
+      this.generatePlayer()
     }
   }
 
@@ -62,7 +64,12 @@ export class BattleManager extends Component {
 
     this.adapPos()
   }
-
+  generatePlayer() {
+    const player = createUINode()
+    player.setParent(this.stage)
+    const playerManager = player.addComponent(PlayerManager)
+    playerManager.init()
+  }
   adapPos() {
     // 獲取地圖大小
     const { mapRowCount, mapColCount } = DataManager.Instance

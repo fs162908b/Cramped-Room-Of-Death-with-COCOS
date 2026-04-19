@@ -5,9 +5,6 @@ import { createUINode, randomByRange } from '../../Utils'
 import DataManager from '../../Runtime/DataManager'
 import ResourceManager from '../../Runtime/ResourceManager'
 
-export const TILE_WIDTH = 55
-export const TILE_HEIGHT = 55
-
 @ccclass('TileMapManager')
 export class TileMapManager extends Component {
   async init() {
