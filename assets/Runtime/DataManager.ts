@@ -7,6 +7,13 @@ export default class DataManager extends Singleton {
   }
 
   mapInfo: ILevel['mapInfo']
-  mapRowCount: number
-  mapColCount: number
+  mapRowCount: number = 0
+  mapColCount: number = 0
+  levelIndex: number = 1
+
+  reset() {
+    this.mapInfo = []
+    this.mapRowCount = 0
+    this.mapColCount = 0
+  }
 }

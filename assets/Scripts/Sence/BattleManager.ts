@@ -4,31 +4,51 @@ import { createUINode } from '../../Utils'
 import Levels, { ILevel } from '../../Levels'
 import DataManager from '../../Runtime/DataManager'
 import { TILE_WIDTH, TILE_HEIGHT } from '../Tile/TileManager'
+import { Event_ENUM } from '../../Enums'
+import EventManager from '../../Runtime/EventManager'
 const { ccclass, property } = _decorator
 
 @ccclass('BattleManager')
 export class BattleManager extends Component {
   level: ILevel
   stage: Node
+
   start() {
     this.generateStage()
     this.initLevel()
   }
 
-  initLevel() {
-    const level = Levels[`level${1}`]
-    if (!level) {
-      return
-    }
-    this.level = level
-
-    DataManager.Instance.mapInfo = this.level.mapInfo
-    DataManager.Instance.mapRowCount = this.level.mapInfo.length || 0
-    DataManager.Instance.mapColCount = this.level.mapInfo[0].length || 0
-
-    this.generateTileMap()
+  protected onLoad(): void {
+    EventManager.Instance.on(Event_ENUM.NEXT_LEVEL, this.nextLevel, this)
   }
 
+  protected onDestroy(): void {
+    EventManager.Instance.off(Event_ENUM.NEXT_LEVEL, this.nextLevel)
+  }
+
+  initLevel() {
+    const level = Levels[`level${DataManager.Instance.levelIndex}`]
+    if (level) {
+      this.clearLevel()
+      this.level = level
+
+      DataManager.Instance.mapInfo = this.level.mapInfo
+      DataManager.Instance.mapRowCount = this.level.mapInfo.length || 0
+      DataManager.Instance.mapColCount = this.level.mapInfo[0].length || 0
+
+      this.generateTileMap()
+    }
+  }
+
+  nextLevel() {
+    DataManager.Instance.levelIndex++
+    this.initLevel()
+  }
+
+  clearLevel() {
+    this.stage.destroyAllChildren()
+    DataManager.Instance.reset()
+  }
   generateStage() {
     this.stage = createUINode()
     this.stage.setParent(this.node)
