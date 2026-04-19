@@ -1,6 +1,9 @@
-import { _decorator, Component, Layers, Node, resources, Sprite, SpriteFrame, UITransform } from 'cc'
-const { ccclass, property } = _decorator
-import Levels from '../../Levels'
+import { _decorator, Component, resources, SpriteFrame } from 'cc'
+const { ccclass } = _decorator
+import { TileManager } from './TileManager'
+import { createUINode, randomByRange } from '../../Utils'
+import DataManager from '../../Runtime/DataManager'
+import ResourceManager from '../../Runtime/ResourceManager'
 
 export const TILE_WIDTH = 55
 export const TILE_HEIGHT = 55
@@ -8,10 +11,8 @@ export const TILE_HEIGHT = 55
 @ccclass('TileMapManager')
 export class TileMapManager extends Component {
   async init() {
-    const { mapInfo } = Levels[`level${1}`]
-
-    const spriteFrames = await this.loadRes()
-
+    const { mapInfo } = DataManager.Instance
+    const spriteFrames = await ResourceManager.Instance.loadDir('texture/tile/tile')
     for (let i = 0; i < mapInfo.length; i++) {
       const column = mapInfo[i]
       for (let j = 0; j < column.length; j++) {
@@ -20,31 +21,19 @@ export class TileMapManager extends Component {
           continue
         }
 
-        const node = new Node()
-        const sprite = node.addComponent(Sprite)
-        const imgSrc = `tile (${item.src})`
-        sprite.spriteFrame = spriteFrames.find(item => item.name === imgSrc) || spriteFrames[0]
+        const node = createUINode()
 
-        const transform = node.addComponent(UITransform)
-        transform.setContentSize(TILE_WIDTH, TILE_HEIGHT)
-
-        node.layer = 1 << Layers.nameToLayer('UI_2D')
-        node.setPosition(i * TILE_WIDTH, -j * TILE_HEIGHT)
+        let number = item.src
+        if ((number === 1 || number === 5 || number === 9) && i % 2 === 0 && j % 2 === 0) {
+          number += randomByRange(0, 4)
+        }
+        const imgSrc = `tile (${number})`
+        const spriteFrame = spriteFrames.find(item => item.name === imgSrc) || spriteFrames[0]
+        const tileManager = node.addComponent(TileManager)
+        tileManager.init(spriteFrame, i, j)
 
         node.setParent(this.node)
       }
     }
-  }
-
-  loadRes() {
-    return new Promise<SpriteFrame[]>((resolve, reject) => {
-      resources.loadDir('texture/tile/tile', SpriteFrame, function (err, assets) {
-        if (err) {
-          reject(err)
-          return
-        }
-        resolve(assets)
-      })
-    })
   }
 }
