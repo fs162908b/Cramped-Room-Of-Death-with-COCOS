@@ -1,4 +1,5 @@
 {
+  "files.autoSave": "off",
   "files.associations": {
     ".code-workspace": "jsonc",
     ".babelrc": "json",
@@ -76,5 +77,17 @@
   "editor.tabSize": 2,
   "svg.preview.background": "black",
   // css modules 默认支持 camelCase
-  "cssModules.camelCase": true
+  "cssModules.camelCase": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.enable": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
+
