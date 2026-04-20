@@ -78,7 +78,7 @@
   // css modules 默认支持 camelCase
   "cssModules.camelCase": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": [
     "javascript",
