@@ -1,6 +1,6 @@
 import { animation, AnimationClip, Sprite, SpriteFrame } from 'cc'
-import { PlayerStateMachine } from '../Scripts/Player/PlayerStateMachine'
 import ResourceManager from '../Runtime/ResourceManager'
+import { StateMachine } from './StateMachine'
 
 const ANIMATION_SPEED = 1 / 8
 
@@ -11,7 +11,7 @@ const ANIMATION_SPEED = 1 / 8
 export default class State {
   private animationClip: AnimationClip
   constructor(
-    private fsm: PlayerStateMachine,
+    private fsm: StateMachine,
     private path: string,
     private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
   ) {
@@ -34,7 +34,7 @@ export default class State {
     track.channel.curve.assignSorted(frames)
     // 最后将轨道添加到动画剪辑以应用
     this.animationClip.addTrack(track)
-
+    this.animationClip.name = this.path
     this.animationClip.wrapMode = this.wrapMode
     this.animationClip.duration = frames.length * ANIMATION_SPEED
   }

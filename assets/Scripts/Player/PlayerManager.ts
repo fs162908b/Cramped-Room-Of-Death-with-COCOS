@@ -1,7 +1,14 @@
 import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame } from 'cc'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import ResourceManager from '../../Runtime/ResourceManager'
-import { CONTROLLER_ENUM, Event_ENUM, PARAME_NAME_ENUM } from '../../Enums'
+import {
+  CONTROLLER_ENUM,
+  DIRECTION_ENUM,
+  DIRECTION_ORDER_ENUM,
+  ENTITY_STATE_ENUM,
+  Event_ENUM,
+  PARAMS_NAME_ENUM,
+} from '../../Enums'
 import EventManager from '../../Runtime/EventManager'
 import { PlayerStateMachine } from './PlayerStateMachine'
 const { ccclass, property } = _decorator
@@ -14,6 +21,28 @@ export class PlayerManager extends Component {
   targetY: number = 0
   private readonly speed = 1 / 10
   fsm: PlayerStateMachine
+
+  private _direction: DIRECTION_ENUM
+  private _state: ENTITY_STATE_ENUM
+
+  get direction() {
+    return this._direction
+  }
+
+  set direction(value: DIRECTION_ENUM) {
+    this._direction = value
+    this.fsm.setParams(PARAMS_NAME_ENUM.DIRECTION, DIRECTION_ORDER_ENUM[value])
+  }
+
+  get state() {
+    return this._state
+  }
+
+  set state(value: ENTITY_STATE_ENUM) {
+    this._state = value
+    this.fsm.setParams(value, true)
+  }
+
   async init() {
     const sprite = this.addComponent(Sprite)
     sprite.sizeMode = Sprite.SizeMode.CUSTOM
@@ -23,7 +52,7 @@ export class PlayerManager extends Component {
     // await this.render()
     this.fsm = this.addComponent(PlayerStateMachine)
     await this.fsm.init()
-    this.fsm.setParams(PARAME_NAME_ENUM.IDLE, true)
+    this.state = ENTITY_STATE_ENUM.IDLE
 
     EventManager.Instance.on(Event_ENUM.PLAYER_CTRL, this.move, this)
   }
@@ -54,18 +83,23 @@ export class PlayerManager extends Component {
   move(inputDirection: CONTROLLER_ENUM) {
     if (inputDirection === CONTROLLER_ENUM.TOP) {
       this.targetY += 1
-    }
-    else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
+    } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
       this.targetY -= 1
-    }
-    else if (inputDirection === CONTROLLER_ENUM.LEFT) {
+    } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
       this.targetX -= 1
-    }
-    else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
+    } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
       this.targetX += 1
-    }
-    else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
-      this.fsm.setParams(PARAME_NAME_ENUM.TURNLEFT, true)
+    } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
+      if (this.direction == DIRECTION_ENUM.TOP) {
+        this.direction = DIRECTION_ENUM.LEFT
+      } else if (this.direction == DIRECTION_ENUM.LEFT) {
+        this.direction = DIRECTION_ENUM.BOTTOM
+      } else if (this.direction == DIRECTION_ENUM.BOTTOM) {
+        this.direction = DIRECTION_ENUM.RIGHT
+      } else if (this.direction == DIRECTION_ENUM.RIGHT) {
+        this.direction = DIRECTION_ENUM.TOP
+      }
+      this.state = ENTITY_STATE_ENUM.TURNLEFT
     }
   }
 }
