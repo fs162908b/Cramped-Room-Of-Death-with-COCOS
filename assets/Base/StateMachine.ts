@@ -12,6 +12,7 @@ import {
 } from 'cc'
 import State from './State'
 import { FSM_PARAM_TYPE_ENUM } from '../Enums'
+import { SubStateMachine } from './SubStateMachine'
 const { ccclass, property } = _decorator
 
 type ParamsValueType = boolean | number
@@ -37,10 +38,10 @@ export const getInitParamsNumber = () => {
 
 @ccclass('StateMachine')
 export abstract class StateMachine extends Component {
-  private _currentState: State = null
+  private _currentState: State | SubStateMachine = null
 
   params: Map<string, IParamsValue> = new Map()
-  stateMachines: Map<string, State> = new Map()
+  stateMachines: Map<string, State | SubStateMachine> = new Map()
   animationComponent: Animation
   waitingList: Array<Promise<SpriteFrame[]>> = []
 
@@ -62,7 +63,7 @@ export abstract class StateMachine extends Component {
     return this.stateMachines.get(key)
   }
 
-  setState(key: string, value: State) {
+  setState(key: string, value: State | SubStateMachine) {
     this.stateMachines.set(key, value)
   }
 
@@ -70,9 +71,9 @@ export abstract class StateMachine extends Component {
     return this._currentState
   }
 
-  set currentState(newState: State) {
+  set currentState(newState: State | SubStateMachine) {
     this._currentState = newState
-    this._currentState.run()
+    this._currentState?.run()
   }
   resetTrigger() {
     for (const [_, value] of this.params.entries()) {

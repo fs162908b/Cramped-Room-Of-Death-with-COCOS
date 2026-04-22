@@ -52,6 +52,7 @@ export class PlayerManager extends Component {
     // await this.render()
     this.fsm = this.addComponent(PlayerStateMachine)
     await this.fsm.init()
+    this.direction = DIRECTION_ENUM.TOP
     this.state = ENTITY_STATE_ENUM.IDLE
 
     EventManager.Instance.on(Event_ENUM.PLAYER_CTRL, this.move, this)
