@@ -18,6 +18,7 @@ export enum Event_ENUM {
   PLAYER_BORN = 'PLAYER_BORN',
   ATTACK_PLAYER = 'ATTACK_PLAYER',
   ATTACK_ENEMY = 'ATTACK_ENEMY',
+  DOOR_OPEN = 'DOOR_OPEN',
 }
 
 export enum CONTROLLER_ENUM {
@@ -75,4 +76,6 @@ export enum DIRECTION_ORDER_ENUM {
 
 export enum ENTITY_TYPE_ENUM {
   PLAYER = 'PLAYER',
+  SKELETON = 'SKELETON',
+  DOOR = 'DOOR',
 }
