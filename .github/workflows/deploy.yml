@@ -19,15 +19,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. 使用 Cocos 引擎進行自動編譯
-      - name: Build Cocos Project
-        uses: small-hao/cocos-creator-action@v1
-        with:
-          cocos_version: '3.4.2'
-          project_path: './'
-          build_platform: 'web-mobile'
-
-      # 3. 將編譯好的檔案部署到 GitHub Pages
+      # 2. 將本地編譯好的檔案部署到 GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
