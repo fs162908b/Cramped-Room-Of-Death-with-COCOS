@@ -86,13 +86,13 @@ export class PlayerManager extends EntityManager {
   willBlock(inputDirection: CONTROLLER_ENUM) {
     const { targetX: x, targetY: y, direction } = this
     const { tileInfo } = DataManager.Instance
-    console.log('x : ', x)
-    console.log('y : ', y)
+
     if (inputDirection === CONTROLLER_ENUM.TOP) {
       if (direction === DIRECTION_ENUM.TOP) {
         const playerNextY = y - 1
         const weaponNextY = y - 2
         if (playerNextY < 0) {
+          this.state = ENTITY_STATE_ENUM.BLOCKFRONT
           return true
         }
         const playerTile = tileInfo[x][playerNextY]
@@ -102,6 +102,7 @@ export class PlayerManager extends EntityManager {
         if (playerTile && playerTile.moveable && (!weaponTile || weaponTile.turnable)) {
           // empty
         } else {
+          this.state = ENTITY_STATE_ENUM.BLOCKFRONT
           return true
         }
       }
@@ -129,6 +130,7 @@ export class PlayerManager extends EntityManager {
       ) {
         // empty
       } else {
+        this.state = ENTITY_STATE_ENUM.BLOCKTURNLEFT
         return true
       }
     }

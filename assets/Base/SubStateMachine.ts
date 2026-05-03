@@ -18,6 +18,5 @@ export abstract class SubStateMachine {
     this._currentState.run()
   }
 
-  abstract init(): void
   abstract run(): void
 }
