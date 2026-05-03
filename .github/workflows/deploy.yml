@@ -1,0 +1,36 @@
+name: Deploy Cocos Game to GitHub Pages
+
+# 設定觸發條件：當程式碼 push 到 master 分支時執行
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    # 給予寫入權限以更新 gh-pages 分支
+    permissions:
+      contents: write
+
+    steps:
+      # 1. 取得最新程式碼
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 使用 Cocos 引擎進行自動編譯
+      - name: Build Cocos Project
+        uses: yesifeng/cocos-creator-action@v1.1.2
+        with:
+          cocos_version: '3.4.2'
+          project_path: './'
+          build_platform: 'web-mobile'
+
+      # 3. 將編譯好的檔案部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./build/web-mobile
