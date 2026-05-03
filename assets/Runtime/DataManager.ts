@@ -1,5 +1,6 @@
-import { ILevel } from '../Levels'
-import Singleton from '../Base/Singleton'
+import Singleton from 'db://assets/Base/Singleton'
+import { ILevel } from 'db://assets/Levels'
+import { TileManager } from 'db://assets/Scripts/Tile/TileManager'
 
 export default class DataManager extends Singleton {
   static get Instance() {
@@ -7,6 +8,7 @@ export default class DataManager extends Singleton {
   }
 
   mapInfo: ILevel['mapInfo']
+  tileInfo: Array<Array<TileManager>> = []
   mapRowCount: number = 0
   mapColCount: number = 0
   levelIndex: number = 1

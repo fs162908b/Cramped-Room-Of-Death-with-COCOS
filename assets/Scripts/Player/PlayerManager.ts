@@ -1,18 +1,9 @@
 import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame } from 'cc'
-import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
-import ResourceManager from '../../Runtime/ResourceManager'
-import {
-  CONTROLLER_ENUM,
-  DIRECTION_ENUM,
-  DIRECTION_ORDER_ENUM,
-  ENTITY_STATE_ENUM,
-  ENTITY_TYPE_ENUM,
-  Event_ENUM,
-  PARAMS_NAME_ENUM,
-} from 'db://assets/Enums'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, Event_ENUM } from 'db://assets/Enums'
 import EventManager from 'db://assets/Runtime/EventManager'
 import { PlayerStateMachine } from 'db://assets/Scripts/Player/PlayerStateMachine'
 import { EntityManager } from 'db://assets/Base/EntityManager'
+import DataManager from 'db://assets/Runtime/DataManager'
 const { ccclass, property } = _decorator
 
 @ccclass('PlayerManager')
@@ -60,6 +51,7 @@ export class PlayerManager extends EntityManager {
   }
 
   move(inputDirection: CONTROLLER_ENUM) {
+    console.log(DataManager.Instance.tileInfo)
     if (inputDirection === CONTROLLER_ENUM.TOP) {
       this.targetY += 1
     } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
