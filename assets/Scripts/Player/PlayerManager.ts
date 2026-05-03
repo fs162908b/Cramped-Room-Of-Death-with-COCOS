@@ -47,7 +47,7 @@ export class PlayerManager extends EntityManager {
       this.y += this.speed
     }
 
-    if((Math.abs(this.targetX - this.x) < 0.1 && Math.abs(this.targetY - this.y) < 0.1) && this.isMoving ) {
+    if (Math.abs(this.targetX - this.x) < 0.1 && Math.abs(this.targetY - this.y) < 0.1 && this.isMoving) {
       this.isMoving = false
       this.x = this.targetX
       this.y = this.targetY
@@ -63,6 +63,10 @@ export class PlayerManager extends EntityManager {
     if (this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH || this.isMoving) return
     if (this.willBlock(inputDirection)) {
       console.log('block')
+      return
+    }
+
+    if (this.willAttack(inputDirection)) {
       return
     }
     this.move(inputDirection)
@@ -106,6 +110,47 @@ export class PlayerManager extends EntityManager {
       this.state = ENTITY_STATE_ENUM.TURNRIGHT
       EventManager.Instance.emit(Event_ENUM.PLAYER_MOVE_END)
     }
+  }
+
+  willAttack(type: CONTROLLER_ENUM) {
+    const enermies = DataManager.Instance.enermies
+    for (let i = 0; i < enermies.length; i++) {
+      const { x: enemyX, y: enemyY } = enermies[i]
+      if (
+        type === CONTROLLER_ENUM.TOP &&
+        this.direction === DIRECTION_ENUM.TOP &&
+        enemyX === this.x &&
+        enemyY === this.targetY - 2
+      ) {
+        this.state = ENTITY_STATE_ENUM.ATTACK
+        return true
+      } else if (
+        type === CONTROLLER_ENUM.LEFT &&
+        this.direction === DIRECTION_ENUM.LEFT &&
+        enemyX === this.x - 2 &&
+        enemyY === this.targetY
+      ) {
+        this.state = ENTITY_STATE_ENUM.ATTACK
+        return true
+      } else if (
+        type === CONTROLLER_ENUM.BOTTOM &&
+        this.direction === DIRECTION_ENUM.BOTTOM &&
+        enemyX === this.x &&
+        enemyY === this.targetY + 2
+      ) {
+        this.state = ENTITY_STATE_ENUM.ATTACK
+        return true
+      } else if (
+        type === CONTROLLER_ENUM.RIGHT &&
+        this.direction === DIRECTION_ENUM.RIGHT &&
+        enemyX === this.x + 2 &&
+        enemyY === this.targetY
+      ) {
+        this.state = ENTITY_STATE_ENUM.ATTACK
+        return true
+      }
+    }
+    return false
   }
 
   willBlock(inputDirection: CONTROLLER_ENUM) {

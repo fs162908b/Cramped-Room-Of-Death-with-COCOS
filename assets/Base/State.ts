@@ -40,7 +40,7 @@ export default class State {
     this.animationClip.duration = frames.length * ANIMATION_SPEED
   }
   run() {
-    if (this.fsm.animationComponent.defaultClip?.name === this.animationClip.name) {
+    if (this.fsm.animationComponent?.defaultClip?.name === this.animationClip.name) {
       return
     }
     this.fsm.animationComponent.defaultClip = this.animationClip
