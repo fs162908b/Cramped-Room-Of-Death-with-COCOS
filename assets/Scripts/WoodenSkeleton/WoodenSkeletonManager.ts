@@ -51,13 +51,16 @@ export class WoodenSkeletonManager extends EntityManager {
 
   onAttack() {
     if (!DataManager.Instance.player) return
-    const { x: playerX, y: playerY } = DataManager.Instance.player
+    const { x: playerX, y: playerY, state: playerState } = DataManager.Instance.player
 
     if (
-      (this.x === playerX && Math.abs(this.y - playerY) <= 1) ||
-      (this.y === playerY && Math.abs(this.x - playerX) <= 1)
+      ((this.x === playerX && Math.abs(this.y - playerY) <= 1) ||
+        (this.y === playerY && Math.abs(this.x - playerX) <= 1)) &&
+      playerState !== ENTITY_STATE_ENUM.DEATH &&
+      playerState !== ENTITY_STATE_ENUM.AIRDEATH
     ) {
       this.state = ENTITY_STATE_ENUM.ATTACK
+      EventManager.Instance.emit(Event_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
     } else {
       this.state = ENTITY_STATE_ENUM.IDLE
     }

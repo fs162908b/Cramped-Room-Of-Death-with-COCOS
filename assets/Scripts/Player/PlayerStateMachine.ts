@@ -20,6 +20,7 @@ import BlockFrontSubStateMachine from 'db://assets/Scripts/Player/BlockFrontSubS
 import { EntityManager } from 'db://assets/Base/EntityManager'
 import BlockTurnLeftSubStateMachine from 'db://assets/Scripts/Player/BlockTurnLeftSubStateMachine'
 import BlockTurnRightSubStateMachine from 'db://assets/Scripts/Player/BlockTurnRightSubStateMachine'
+import DeathSubStateMachine from './DeathSubStateMachine'
 const { ccclass, property } = _decorator
 
 @ccclass('PlayerStateMachine')
@@ -40,6 +41,7 @@ export class PlayerStateMachine extends StateMachine {
     this.params.set(PARAMS_NAME_ENUM.BLOCKTURNLEFT, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.BLOCKTURNRIGHT, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
+    this.params.set(PARAMS_NAME_ENUM.DEATH, getInitParamsTrigger())
   }
 
   initStateMachine() {
@@ -49,6 +51,7 @@ export class PlayerStateMachine extends StateMachine {
     this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKFRONT, new BlockFrontSubStateMachine(this))
     this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKTURNLEFT, new BlockTurnLeftSubStateMachine(this))
     this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKTURNRIGHT, new BlockTurnRightSubStateMachine(this))
+    this.stateMachines.set(PARAMS_NAME_ENUM.DEATH, new DeathSubStateMachine(this))
   }
 
   initAnimationEvent() {
@@ -68,7 +71,10 @@ export class PlayerStateMachine extends StateMachine {
       case this.stateMachines.get(PARAMS_NAME_ENUM.TURNRIGHT):
       case this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNLEFT):
       case this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNRIGHT):
-        if (this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value) {
+      case this.stateMachines.get(PARAMS_NAME_ENUM.DEATH):
+        if (this.params.get(PARAMS_NAME_ENUM.DEATH).value) {
+          this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.DEATH)
+        } else if (this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT)
         } else if (this.params.get(PARAMS_NAME_ENUM.TURNRIGHT).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNRIGHT)
