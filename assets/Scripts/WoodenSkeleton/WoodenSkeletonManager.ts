@@ -52,7 +52,6 @@ export class WoodenSkeletonManager extends EntityManager {
   onAttack() {
     if (!DataManager.Instance.player) return
     const { x: playerX, y: playerY, state: playerState } = DataManager.Instance.player
-
     if (
       ((this.x === playerX && Math.abs(this.y - playerY) <= 1) ||
         (this.y === playerY && Math.abs(this.x - playerX) <= 1)) &&
