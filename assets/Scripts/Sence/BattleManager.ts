@@ -7,6 +7,7 @@ import { TILE_WIDTH, TILE_HEIGHT } from '../Tile/TileManager'
 import { Event_ENUM } from '../../Enums'
 import EventManager from '../../Runtime/EventManager'
 import { PlayerManager } from '../Player/PlayerManager'
+import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 const { ccclass, property } = _decorator
 
 @ccclass('BattleManager')
@@ -39,6 +40,7 @@ export class BattleManager extends Component {
 
       this.generateTileMap()
       this.generatePlayer()
+      this.generateEnemies()
     }
   }
 
@@ -70,6 +72,14 @@ export class BattleManager extends Component {
     const playerManager = player.addComponent(PlayerManager)
     playerManager.init()
   }
+
+  generateEnemies() {
+    const enemy = createUINode()
+    enemy.setParent(this.stage)
+    const woodenSkeletonManager = enemy.addComponent(WoodenSkeletonManager)
+    woodenSkeletonManager.init()
+  }
+
   adapPos() {
     // 獲取地圖大小
     const { mapRowCount, mapColCount } = DataManager.Instance
