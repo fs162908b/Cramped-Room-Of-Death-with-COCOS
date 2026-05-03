@@ -15,6 +15,7 @@ import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from 'db://as
 import IdleSubStateMachine from 'db://assets/Scripts/WoodenSkeleton/IdleSubStateMachine'
 import AttackSubStateMachine from 'db://assets/Scripts/WoodenSkeleton/AttackSubStateMachine'
 import { EntityManager } from '../../Base/EntityManager'
+import DeathSubStateMachine from './DeathSubStateMachine'
 
 const { ccclass, property } = _decorator
 
@@ -32,11 +33,13 @@ export class WoodenSkeletonStateMachine extends StateMachine {
     this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
     this.params.set(PARAMS_NAME_ENUM.ATTACK, getInitParamsTrigger())
+    this.params.set(PARAMS_NAME_ENUM.DEATH, getInitParamsTrigger())
   }
 
   initStateMachine() {
     this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
     this.stateMachines.set(PARAMS_NAME_ENUM.ATTACK, new AttackSubStateMachine(this))
+    this.stateMachines.set(PARAMS_NAME_ENUM.DEATH, new DeathSubStateMachine(this))
   }
 
   initAnimationEvent() {
@@ -52,7 +55,10 @@ export class WoodenSkeletonStateMachine extends StateMachine {
     switch (this.currentState) {
       case this.stateMachines.get(PARAMS_NAME_ENUM.IDLE):
       case this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK):
-        if (this.params.get(PARAMS_NAME_ENUM.ATTACK).value) {
+      case this.stateMachines.get(PARAMS_NAME_ENUM.DEATH):
+        if (this.params.get(PARAMS_NAME_ENUM.DEATH).value) {
+          this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.DEATH)
+        } else if (this.params.get(PARAMS_NAME_ENUM.ATTACK).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK)
         } else if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)

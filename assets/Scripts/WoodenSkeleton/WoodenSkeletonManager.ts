@@ -24,12 +24,22 @@ export class WoodenSkeletonManager extends EntityManager {
     EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
     EventManager.Instance.on(Event_ENUM.PLAYER_BORN, this.onChangeDirection, this)
     EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onAttack, this)
+    EventManager.Instance.on(Event_ENUM.ATTACK_ENEMY, this.onDead, this)
 
     this.onChangeDirection(true)
   }
 
+  onDestroy(): void {
+    super.onDestroy()
+    EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onChangeDirection)
+    EventManager.Instance.off(Event_ENUM.PLAYER_BORN, this.onChangeDirection)
+    EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onAttack)
+    EventManager.Instance.off(Event_ENUM.ATTACK_ENEMY, this.onDead)
+  }
+
   onChangeDirection(isInited: boolean = false) {
-    if (!DataManager.Instance.player) return
+    if (this.state === ENTITY_STATE_ENUM.DEATH || !DataManager.Instance.player) return
+
     const { x: playerX, y: playerY } = DataManager.Instance.player
     const disX = Math.abs(this.x - playerX)
     const disY = Math.abs(this.y - playerY)
@@ -50,7 +60,8 @@ export class WoodenSkeletonManager extends EntityManager {
   }
 
   onAttack() {
-    if (!DataManager.Instance.player) return
+    if (this.state === ENTITY_STATE_ENUM.DEATH || !DataManager.Instance.player) return
+
     const { x: playerX, y: playerY, state: playerState } = DataManager.Instance.player
     if (
       ((this.x === playerX && Math.abs(this.y - playerY) <= 1) ||
@@ -63,5 +74,13 @@ export class WoodenSkeletonManager extends EntityManager {
     } else {
       this.state = ENTITY_STATE_ENUM.IDLE
     }
+  }
+
+  onDead(id: string) {
+    if (this.state === ENTITY_STATE_ENUM.DEATH) {
+      return
+    }
+
+    if (this.id === id) this.state = ENTITY_STATE_ENUM.DEATH
   }
 }
