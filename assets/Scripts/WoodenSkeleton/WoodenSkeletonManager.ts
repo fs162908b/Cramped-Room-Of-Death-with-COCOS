@@ -20,5 +20,29 @@ export class WoodenSkeletonManager extends EntityManager {
       direction: DIRECTION_ENUM.TOP,
       state: ENTITY_STATE_ENUM.IDLE,
     })
+
+    EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
+    EventManager.Instance.on(Event_ENUM.PLAYER_BORN, this.onChangeDirection, this)
+  }
+
+  onChangeDirection(isInited: boolean = false) {
+    if (!DataManager.Instance.player) return
+    const { x: playerX, y: playerY } = DataManager.Instance.player
+    const disX = Math.abs(this.x - playerX)
+    const disY = Math.abs(this.y - playerY)
+
+    if (disX === disY && !isInited) {
+      return
+    }
+
+    if (playerX >= this.x && playerY <= this.y) {
+      this.direction = disY > disX ? DIRECTION_ENUM.TOP : DIRECTION_ENUM.RIGHT
+    } else if (playerX <= this.x && playerY <= this.y) {
+      this.direction = disY > disX ? DIRECTION_ENUM.TOP : DIRECTION_ENUM.LEFT
+    } else if (playerX <= this.x && playerY > this.y) {
+      this.direction = disY > disX ? DIRECTION_ENUM.BOTTOM : DIRECTION_ENUM.LEFT
+    } else if (playerX >= this.x && playerY > this.y) {
+      this.direction = disY > disX ? DIRECTION_ENUM.BOTTOM : DIRECTION_ENUM.RIGHT
+    }
   }
 }
