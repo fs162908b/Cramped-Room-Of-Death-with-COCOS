@@ -73,8 +73,8 @@ export class BattleManager extends Component {
   adapPos() {
     // 獲取地圖大小
     const { mapRowCount, mapColCount } = DataManager.Instance
-    const disX = (TILE_WIDTH * mapColCount) / 2
-    const disY = (TILE_HEIGHT * mapRowCount) / 2 + 80
+    const disX = (TILE_WIDTH * mapRowCount) / 2
+    const disY = (TILE_HEIGHT * mapColCount) / 2 + 80
 
     this.stage.setPosition(-disX, disY)
   }

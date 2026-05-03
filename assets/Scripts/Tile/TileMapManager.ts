@@ -1,6 +1,6 @@
 import { _decorator, Component, resources, SpriteFrame } from 'cc'
 const { ccclass } = _decorator
-import { TileManager } from './TileManager'
+import { TILE_HEIGHT, TILE_WIDTH, TileManager } from 'db://assets/Scripts/Tile/TileManager'
 import { createUINode, randomByRange } from '../../Utils'
 import DataManager from '../../Runtime/DataManager'
 import ResourceManager from '../../Runtime/ResourceManager'
@@ -11,6 +11,8 @@ export class TileMapManager extends Component {
     const { mapInfo } = DataManager.Instance
     const spriteFrames = await ResourceManager.Instance.loadDir('texture/tile/tile')
     DataManager.Instance.tileInfo = []
+    DataManager.Instance.mapRowCount = mapInfo.length
+    DataManager.Instance.mapColCount = mapInfo[0].length
     for (let i = 0; i < mapInfo.length; i++) {
       const column = mapInfo[i]
       DataManager.Instance.tileInfo[i] = []

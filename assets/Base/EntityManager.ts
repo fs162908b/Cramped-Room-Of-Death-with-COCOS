@@ -12,6 +12,7 @@ import EventManager from 'db://assets/Runtime/EventManager'
 import { IEntity } from 'db://assets/Levels'
 import { PlayerStateMachine } from 'db://assets/Scripts/Player/PlayerStateMachine'
 import { TILE_HEIGHT, TILE_WIDTH } from 'db://assets/Scripts/Tile/TileManager'
+import DataManager from 'db://assets/Runtime/DataManager'
 const { ccclass, property } = _decorator
 
 @ccclass('EntityManager')
@@ -56,6 +57,9 @@ export class EntityManager extends Component {
   }
 
   update() {
-    this.node.setPosition(this.x * TILE_WIDTH - TILE_WIDTH * 1.5, this.y * TILE_HEIGHT + TILE_HEIGHT * 1.5)
+    this.node.setPosition(
+      this.x * TILE_WIDTH - TILE_WIDTH * 1.5,
+      -this.y * TILE_HEIGHT + TILE_HEIGHT * 1.5,
+    )
   }
 }

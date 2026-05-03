@@ -17,14 +17,15 @@ export class PlayerManager extends EntityManager {
     this.fsm = this.addComponent(PlayerStateMachine)
     await this.fsm.init()
     super.init({
-      x: 0,
-      y: 0,
+      x: 2,
+      y: 8,
       type: ENTITY_TYPE_ENUM.PLAYER,
       direction: DIRECTION_ENUM.TOP,
       state: ENTITY_STATE_ENUM.IDLE,
     })
-
-    EventManager.Instance.on(Event_ENUM.PLAYER_CTRL, this.move, this)
+    this.targetX = this.x
+    this.targetY = this.y
+    EventManager.Instance.on(Event_ENUM.PLAYER_CTRL, this.inputHandle, this)
   }
 
   update() {
@@ -50,12 +51,20 @@ export class PlayerManager extends EntityManager {
     }
   }
 
+  inputHandle(inputDirection: CONTROLLER_ENUM) {
+    if (this.willBlock(inputDirection)) {
+      console.log('block')
+      return
+    }
+    this.move(inputDirection)
+  }
+
   move(inputDirection: CONTROLLER_ENUM) {
     console.log(DataManager.Instance.tileInfo)
     if (inputDirection === CONTROLLER_ENUM.TOP) {
-      this.targetY += 1
-    } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
       this.targetY -= 1
+    } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
+      this.targetY += 1
     } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
       this.targetX -= 1
     } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
@@ -72,5 +81,57 @@ export class PlayerManager extends EntityManager {
       }
       this.state = ENTITY_STATE_ENUM.TURNLEFT
     }
+  }
+
+  willBlock(inputDirection: CONTROLLER_ENUM) {
+    const { targetX: x, targetY: y, direction } = this
+    const { tileInfo } = DataManager.Instance
+    console.log('x : ', x)
+    console.log('y : ', y)
+    if (inputDirection === CONTROLLER_ENUM.TOP) {
+      if (direction === DIRECTION_ENUM.TOP) {
+        const playerNextY = y - 1
+        const weaponNextY = y - 2
+        if (playerNextY < 0) {
+          return true
+        }
+        const playerTile = tileInfo[x][playerNextY]
+        const weaponTile = tileInfo[x][weaponNextY]
+        console.log('playerTile : ', playerTile)
+        console.log('weaponTile : ', weaponTile)
+        if (playerTile && playerTile.moveable && (!weaponTile || weaponTile.turnable)) {
+          // empty
+        } else {
+          return true
+        }
+      }
+    } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
+      let nextX
+      let nextY
+      if (direction == DIRECTION_ENUM.TOP) {
+        nextX = x - 1
+        nextY = y - 1
+      } else if (direction == DIRECTION_ENUM.LEFT) {
+        nextX = x - 1
+        nextY = y + 1
+      } else if (direction == DIRECTION_ENUM.BOTTOM) {
+        nextX = x + 1
+        nextY = y + 1
+      } else if (direction == DIRECTION_ENUM.RIGHT) {
+        nextX = x + 1
+        nextY = y - 1
+      }
+
+      if (
+        (!tileInfo[x][nextY] || tileInfo[x][nextY].turnable) &&
+        (!tileInfo[nextX][y] || tileInfo[nextX][y].turnable) &&
+        (!tileInfo[nextX][nextY] || tileInfo[nextX][nextY].turnable)
+      ) {
+        // empty
+      } else {
+        return true
+      }
+    }
+    return false
   }
 }
