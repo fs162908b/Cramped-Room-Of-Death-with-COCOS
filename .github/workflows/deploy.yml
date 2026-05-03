@@ -21,7 +21,7 @@ jobs:
 
       # 2. 使用 Cocos 引擎進行自動編譯
       - name: Build Cocos Project
-        uses: cocos-creator/cocos-creator-action@v1
+        uses: small-hao/cocos-creator-action@v1
         with:
           cocos_version: '3.4.2'
           project_path: './'
