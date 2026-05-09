@@ -159,6 +159,8 @@ export class PlayerManager extends EntityManager {
   willBlock(inputDirection: CONTROLLER_ENUM) {
     const { targetX: x, targetY: y, direction } = this
     const { tileInfo } = DataManager.Instance
+    const { x: doorX, y: doorY, state: doorState } = DataManager.Instance.door
+    const enermies = DataManager.Instance.enermies.filter(enemy => enemy.state !== ENTITY_STATE_ENUM.DEATH)
 
     if (inputDirection === CONTROLLER_ENUM.TOP) {
       const playerNextX = x
@@ -166,6 +168,21 @@ export class PlayerManager extends EntityManager {
       const weaponNextX = direction === DIRECTION_ENUM.LEFT ? x - 1 : direction === DIRECTION_ENUM.RIGHT ? x + 1 : x
       const weaponNextY =
         direction === DIRECTION_ENUM.TOP ? y - 2 : direction === DIRECTION_ENUM.BOTTOM ? y : playerNextY
+
+      if (((x === doorX && playerNextY === doorY) || (x === doorX && weaponNextY === doorY)) && doorState !== ENTITY_STATE_ENUM.DEATH
+      ) {
+        this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+        return true
+      }
+
+      for (let i = 0; i < enermies.length; i++) {
+        const { x: enemyX, y: enemyY } = enermies[i]
+        if (((x === enemyX && playerNextY === enemyY) || (x === enemyX && weaponNextY === enemyY))) {
+          this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+          return true
+        }
+      }
+
 
       if (this.checkBlock(playerNextX, playerNextY, weaponNextX, weaponNextY)) return true
     } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
@@ -175,21 +192,67 @@ export class PlayerManager extends EntityManager {
       const weaponNextY =
         direction === DIRECTION_ENUM.TOP ? y - 1 : direction === DIRECTION_ENUM.BOTTOM ? y + 2 : playerNextY
 
+      if (
+        ((playerNextX === doorX && playerNextY === doorY) || (weaponNextX === doorX && weaponNextY === doorY)) &&
+        doorState !== ENTITY_STATE_ENUM.DEATH
+      ) {
+        this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+        return true
+      }
+
+      for (const enemy of enermies) {
+        const { x: enemyX, y: enemyY } = enemy
+        if ((playerNextX === enemyX && playerNextY === enemyY) || (weaponNextX === enemyX && weaponNextY === enemyY)) {
+          this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+          return true
+        }
+      }
+
       if (this.checkBlock(playerNextX, playerNextY, weaponNextX, weaponNextY)) return true
     } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
       const playerNextX = x - 1
       const playerNextY = y
-      const weaponNextX =
-        direction === DIRECTION_ENUM.LEFT ? x - 2 : direction === DIRECTION_ENUM.RIGHT ? x : playerNextX
+      const weaponNextX = direction === DIRECTION_ENUM.LEFT ? x - 2 : direction === DIRECTION_ENUM.RIGHT ? x : playerNextX
       const weaponNextY = direction === DIRECTION_ENUM.TOP ? y - 1 : direction === DIRECTION_ENUM.BOTTOM ? y + 1 : y
+
+      if (
+        ((playerNextX === doorX && playerNextY === doorY) || (weaponNextX === doorX && weaponNextY === doorY)) &&
+        doorState !== ENTITY_STATE_ENUM.DEATH
+      ) {
+        this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+        return true
+      }
+
+      for (const enemy of enermies) {
+        const { x: enemyX, y: enemyY } = enemy
+        if ((playerNextX === enemyX && playerNextY === enemyY) || (weaponNextX === enemyX && weaponNextY === enemyY)) {
+          this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+          return true
+        }
+      }
 
       if (this.checkBlock(playerNextX, playerNextY, weaponNextX, weaponNextY)) return true
     } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
       const playerNextX = x + 1
       const playerNextY = y
-      const weaponNextX =
-        direction === DIRECTION_ENUM.LEFT ? x : direction === DIRECTION_ENUM.RIGHT ? x + 2 : playerNextX
+      const weaponNextX = direction === DIRECTION_ENUM.LEFT ? x : direction === DIRECTION_ENUM.RIGHT ? x + 2 : playerNextX
       const weaponNextY = direction === DIRECTION_ENUM.TOP ? y - 1 : direction === DIRECTION_ENUM.BOTTOM ? y + 1 : y
+
+      if (
+        ((playerNextX === doorX && playerNextY === doorY) || (weaponNextX === doorX && weaponNextY === doorY)) &&
+        doorState !== ENTITY_STATE_ENUM.DEATH
+      ) {
+        this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+        return true
+      }
+
+      for (const enemy of enermies) {
+        const { x: enemyX, y: enemyY } = enemy
+        if ((playerNextX === enemyX && playerNextY === enemyY) || (weaponNextX === enemyX && weaponNextY === enemyY)) {
+          this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+          return true
+        }
+      }
 
       if (this.checkBlock(playerNextX, playerNextY, weaponNextX, weaponNextY)) return true
     } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
@@ -208,6 +271,22 @@ export class PlayerManager extends EntityManager {
         nextX = x + 1
         nextY = y - 1
       }
+
+      if (((x === doorX && nextY === doorY) || (nextX === doorX && y === doorY) ||
+        (nextX === doorX && nextY === doorY)) && doorState !== ENTITY_STATE_ENUM.DEATH) {
+        this.state = ENTITY_STATE_ENUM.BLOCKTURNLEFT
+        return true
+      }
+
+      for (const enemy of enermies) {
+        const {x: enemyX, y: enemyY} = enemy
+        if((( x === enemyX && nextY === enemyY) || (nextX === enemyX && y === enemyY) ||
+        ( nextX === enemyX && nextY === enemyY )) ) {
+        this.state = ENTITY_STATE_ENUM.BLOCKTURNLEFT
+        return true
+      }
+      }
+
 
       if (
         (!tileInfo[x][nextY] || tileInfo[x][nextY].turnable) &&
@@ -234,6 +313,26 @@ export class PlayerManager extends EntityManager {
       } else if (direction == DIRECTION_ENUM.LEFT) {
         nextX = x - 1
         nextY = y - 1
+      }
+
+      if (
+        ((x === doorX && nextY === doorY) || (nextX === doorX && y === doorY) || (nextX === doorX && nextY === doorY)) &&
+        doorState !== ENTITY_STATE_ENUM.DEATH
+      ) {
+        this.state = ENTITY_STATE_ENUM.BLOCKTURNRIGHT
+        return true
+      }
+
+      for (const enemy of enermies) {
+        const { x: enemyX, y: enemyY } = enemy
+        if (
+          (x === enemyX && nextY === enemyY) ||
+          (nextX === enemyX && y === enemyY) ||
+          (nextX === enemyX && nextY === enemyY)
+        ) {
+          this.state = ENTITY_STATE_ENUM.BLOCKTURNRIGHT
+          return true
+        }
       }
 
       if (
