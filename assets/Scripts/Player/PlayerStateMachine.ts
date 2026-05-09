@@ -22,6 +22,7 @@ import BlockTurnLeftSubStateMachine from 'db://assets/Scripts/Player/BlockTurnLe
 import BlockTurnRightSubStateMachine from 'db://assets/Scripts/Player/BlockTurnRightSubStateMachine'
 import DeathSubStateMachine from './DeathSubStateMachine'
 import AttackSubStateMachine from './AttackSubStateMachine'
+import AirDeathSubStateMachine from './AirDeathSubStateMachine'
 const { ccclass, property } = _decorator
 
 @ccclass('PlayerStateMachine')
@@ -44,6 +45,7 @@ export class PlayerStateMachine extends StateMachine {
     this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
     this.params.set(PARAMS_NAME_ENUM.DEATH, getInitParamsTrigger())
     this.params.set(PARAMS_NAME_ENUM.ATTACK, getInitParamsTrigger())
+    this.params.set(PARAMS_NAME_ENUM.AIRDEATH, getInitParamsTrigger())
   }
 
   initStateMachine() {
@@ -55,6 +57,7 @@ export class PlayerStateMachine extends StateMachine {
     this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKTURNRIGHT, new BlockTurnRightSubStateMachine(this))
     this.stateMachines.set(PARAMS_NAME_ENUM.DEATH, new DeathSubStateMachine(this))
     this.stateMachines.set(PARAMS_NAME_ENUM.ATTACK, new AttackSubStateMachine(this))
+    this.stateMachines.set(PARAMS_NAME_ENUM.AIRDEATH, new AirDeathSubStateMachine(this))
   }
 
   initAnimationEvent() {
@@ -76,8 +79,11 @@ export class PlayerStateMachine extends StateMachine {
       case this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNRIGHT):
       case this.stateMachines.get(PARAMS_NAME_ENUM.DEATH):
       case this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK):
+      case this.stateMachines.get(PARAMS_NAME_ENUM.AIRDEATH):
         if (this.params.get(PARAMS_NAME_ENUM.DEATH).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.DEATH)
+        } else if (this.params.get(PARAMS_NAME_ENUM.AIRDEATH).value) {
+          this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.AIRDEATH)
         } else if (this.params.get(PARAMS_NAME_ENUM.ATTACK).value) {
           this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK)
         } else if (this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value) {
