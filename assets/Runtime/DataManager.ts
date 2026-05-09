@@ -2,8 +2,8 @@ import Singleton from 'db://assets/Base/Singleton'
 import { ILevel } from 'db://assets/Levels'
 import { TileManager } from 'db://assets/Scripts/Tile/TileManager'
 import { PlayerManager } from '../Scripts/Player/PlayerManager'
-import { WoodenSkeletonManager } from '../Scripts/WoodenSkeleton/WoodenSkeletonManager'
 import { DoorManager } from '../Scripts/Door/DoorManager'
+import { EnemyManager } from '../Base/EnemyManager'
 
 export default class DataManager extends Singleton {
   static get Instance() {
@@ -16,7 +16,7 @@ export default class DataManager extends Singleton {
   mapColCount: number = 0
   levelIndex: number = 1
   player: PlayerManager
-  enermies: WoodenSkeletonManager[] = []
+  enermies: EnemyManager[] = []
   door: DoorManager
 
   reset() {
