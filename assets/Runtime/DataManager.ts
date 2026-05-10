@@ -5,6 +5,7 @@ import { PlayerManager } from '../Scripts/Player/PlayerManager'
 import { DoorManager } from '../Scripts/Door/DoorManager'
 import { EnemyManager } from '../Base/EnemyManager'
 import { BurstManager } from '../Scripts/Burst/BurstManager'
+import { SpikesManager } from '../Scripts/Spikes/SpikesManager'
 
 export default class DataManager extends Singleton {
   static get Instance() {
@@ -20,7 +21,8 @@ export default class DataManager extends Singleton {
   enermies: EnemyManager[] = []
   door: DoorManager
   bursts: BurstManager[] = []
-
+  spikes: SpikesManager[] = []
+  
   reset() {
     this.mapInfo = []
     this.mapRowCount = 0

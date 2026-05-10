@@ -13,7 +13,8 @@
   },
   "files.exclude": {
     "**/*/adapters/index.ts": true,
-    "**/*/adapters/index.js": true
+    "**/*/adapters/index.js": true,
+    "**/*.meta": true
   },
   "search.useIgnoreFiles": true,
   "search.exclude": {
