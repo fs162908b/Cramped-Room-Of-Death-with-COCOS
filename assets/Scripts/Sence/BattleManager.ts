@@ -51,9 +51,10 @@ export class BattleManager extends Component {
       this.generateTileMap()
       this.generateDoor()
       this.generateBurst()
-      this.generatePlayer()
+
       this.generateEnemies()
       this.generateSpikes()
+      this.generatePlayer()
     }
   }
 

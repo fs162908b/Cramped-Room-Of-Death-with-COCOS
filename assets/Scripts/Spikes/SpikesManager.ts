@@ -5,6 +5,7 @@ import {
   DIRECTION_ORDER_ENUM,
   ENTITY_STATE_ENUM,
   ENTITY_TYPE_ENUM,
+  EVENT_ENUM,
   Event_ENUM,
   PARAMS_NAME_ENUM,
   SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
@@ -15,6 +16,7 @@ import { TILE_HEIGHT, TILE_WIDTH } from 'db://assets/Scripts/Tile/TileManager'
 import { StateMachine } from 'db://assets/Base/StateMachine'
 import { randomByLen } from 'db://assets/Utils'
 import { SpikesStateMachine } from './SpikesStateMachine'
+import DataManager from '../../Runtime/DataManager'
 const { ccclass, property } = _decorator
 
 @ccclass('SpikesManager')
@@ -67,15 +69,27 @@ export class SpikesManager extends Component {
     this.node.setPosition(this.x * TILE_WIDTH - TILE_WIDTH * 1.5, -this.y * TILE_HEIGHT + TILE_HEIGHT * 1.5)
   }
 
+  backZero() {
+    this.count = 0
+  }
+
   onLoop() {
     if (this.count >= this.totalCount) {
-      this.count = 0
+      this.count = 1
     } else {
       this.count++
     }
+    this.onAttack()
   }
 
   onDestroy() {
     EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onLoop)
+  }
+
+  onAttack() {
+    const { x: playerX, y: playerY } = DataManager.Instance.player
+    if (playerX === this.x && playerY === this.y && this.count === this.totalCount) {
+      EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
+    }
   }
 }
