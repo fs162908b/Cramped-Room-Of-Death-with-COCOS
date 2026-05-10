@@ -4,7 +4,13 @@ import { createUINode } from '../../Utils'
 import Levels, { ILevel } from '../../Levels'
 import DataManager from '../../Runtime/DataManager'
 import { TILE_WIDTH, TILE_HEIGHT } from '../Tile/TileManager'
-import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, Event_ENUM, SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM } from 'db://assets/Enums'
+import {
+  DIRECTION_ENUM,
+  ENTITY_STATE_ENUM,
+  ENTITY_TYPE_ENUM,
+  Event_ENUM,
+  SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
+} from 'db://assets/Enums'
 import EventManager from '../../Runtime/EventManager'
 import { PlayerManager } from '../Player/PlayerManager'
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
@@ -146,18 +152,16 @@ export class BattleManager extends Component {
     const spikes = createUINode()
     spikes.setParent(this.stage)
     const spikesManager = spikes.addComponent(SpikesManager)
-    await spikesManager.init(
-      {
-        x: 3,
-        y: 6,
-        type: ENTITY_TYPE_ENUM.SPIKES_ONE,
-        count: 1,
-        totalCount: SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM.SPIKES_ONE,
-      }
-    )
+    await spikesManager.init({
+      x: 3,
+      y: 6,
+      type: ENTITY_TYPE_ENUM.SPIKES_FOUR,
+      count: 1,
+      totalCount: SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM.SPIKES_ONE,
+    })
     DataManager.Instance.spikes.push(spikesManager)
   }
-  
+
   adapPos() {
     // 獲取地圖大小
     const { mapRowCount, mapColCount } = DataManager.Instance

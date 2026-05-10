@@ -20,6 +20,9 @@ import {
 import { getInitParamsNumber, getInitParamsTrigger, StateMachine } from 'db://assets/Base/StateMachine'
 import SpikesSubStateMachine from './SpikesSubStateMachine'
 import SpikesOneSubStateMachine from './SpikesOneSubStateMachine'
+import SpikesTwoSubStateMachine from './SpikesTwoSubStateMachine'
+import SpikesThreeSubStateMachine from './SpikesThreeSubStateMachine'
+import SpikesFourSubStateMachine from './SpikesFourSubStateMachine'
 
 const { ccclass, property } = _decorator
 
@@ -40,6 +43,9 @@ export class SpikesStateMachine extends StateMachine {
 
   initStateMachine() {
     this.stateMachines.set(ENTITY_TYPE_ENUM.SPIKES_ONE, new SpikesOneSubStateMachine(this))
+    this.stateMachines.set(ENTITY_TYPE_ENUM.SPIKES_TWO, new SpikesTwoSubStateMachine(this))
+    this.stateMachines.set(ENTITY_TYPE_ENUM.SPIKES_THREE, new SpikesThreeSubStateMachine(this))
+    this.stateMachines.set(ENTITY_TYPE_ENUM.SPIKES_FOUR, new SpikesFourSubStateMachine(this))
   }
 
   initAnimationEvent() {
