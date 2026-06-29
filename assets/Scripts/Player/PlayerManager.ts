@@ -27,6 +27,12 @@ export class PlayerManager extends EntityManager {
     EventManager.Instance.on(Event_ENUM.ATTACK_PLAYER, this.onDead, this)
   }
 
+  onDestroy() {
+    super.onDestroy()
+    EventManager.Instance.off(Event_ENUM.PLAYER_CTRL, this.inputHandle)
+    EventManager.Instance.off(Event_ENUM.ATTACK_PLAYER, this.onDead)
+  }
+
   update() {
     this.updateXY()
     super.update()
@@ -64,13 +70,13 @@ export class PlayerManager extends EntityManager {
       this.isMoving
     )
       return
-    if (this.willBlock(inputDirection)) {
-      return
-    }
     const id = this.willAttack(inputDirection)
     if (id) {
       EventManager.Instance.emit(Event_ENUM.ATTACK_ENEMY, id)
       EventManager.Instance.emit(Event_ENUM.DOOR_OPEN)
+      return
+    }
+    if (this.willBlock(inputDirection)) {
       return
     }
     this.move(inputDirection)
