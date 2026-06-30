@@ -12,6 +12,7 @@ import {
   SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
 } from 'db://assets/Enums'
 import EventManager from '../../Runtime/EventManager'
+import FadeManager from '../../Runtime/Fademanager'
 import { PlayerManager } from '../Player/PlayerManager'
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 import { DoorManager } from '../Door/DoorManager'
@@ -25,7 +26,7 @@ const { ccclass, property } = _decorator
 export class BattleManager extends Component {
   level: ILevel
   stage: Node
-  private smokeLayer:Node
+  private smokeLayer: Node
 
   start() {
     this.generateStage()
@@ -33,7 +34,7 @@ export class BattleManager extends Component {
   }
 
   protected onLoad(): void {
-    DataManager.Instance.levelIndex = 1;
+    DataManager.Instance.levelIndex = 1
     EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
     EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
     EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
@@ -43,9 +44,10 @@ export class BattleManager extends Component {
     EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
   }
 
-  initLevel() {
+  async initLevel() {
     const level = Levels[`level${DataManager.Instance.levelIndex}`]
     if (level) {
+      await FadeManager.Instance.fadeIn()
       this.clearLevel()
 
       this.level = level
@@ -54,13 +56,17 @@ export class BattleManager extends Component {
       DataManager.Instance.mapRowCount = this.level.mapInfo.length || 0
       DataManager.Instance.mapColCount = this.level.mapInfo[0].length || 0
 
-      this.generateTileMap()
-      this.generateBurst()
-      this.generateDoor()
-      this.generateSmokeLayer()
-      this.generateSpikes()
-      this.generateEnemies()
-      this.generatePlayer()
+      await Promise.all([
+        this.generateTileMap(),
+        this.generateBurst(),
+        this.generateDoor(),
+        this.generateSmokeLayer(),
+        this.generateSpikes(),
+        this.generateEnemies(),
+        this.generatePlayer()
+      ])
+
+      await FadeManager.Instance.fadeOut()
     }
   }
 
@@ -96,68 +102,67 @@ export class BattleManager extends Component {
   }
 
   async generateEnemies() {
-    const promise = [];
-    for(let i = 0; i < this.level.enemies.length; i++){
-      const enemy = this.level.enemies[i];
+    const promise = []
+    for (let i = 0; i < this.level.enemies.length; i++) {
+      const enemy = this.level.enemies[i]
       const node = createUINode()
       node.setParent(this.stage)
-      const Manager = enemy.type === ENTITY_TYPE_ENUM.SKELETON_WOODEN ? WoodenSkeletonManager : IronSkeletonManager;
+      const Manager = enemy.type === ENTITY_TYPE_ENUM.SKELETON_WOODEN ? WoodenSkeletonManager : IronSkeletonManager
       const manager = node.addComponent(Manager)
-      promise.push(manager.init(enemy));
+      promise.push(manager.init(enemy))
       DataManager.Instance.enermies.push(manager)
     }
 
-    await Promise.all(promise);
-
+    await Promise.all(promise)
   }
 
   async generateDoor() {
     const door = createUINode()
     door.setParent(this.stage)
     const doorManager = door.addComponent(DoorManager)
-    await doorManager.init(this.level.door);
+    await doorManager.init(this.level.door)
     DataManager.Instance.door = doorManager
   }
 
   async generateBurst() {
-    const promise = [];
-    for(let i = 0; i < this.level.bursts.length; i++){
-      const bursts = this.level.bursts[i];
+    const promise = []
+    for (let i = 0; i < this.level.bursts.length; i++) {
+      const bursts = this.level.bursts[i]
       const node = createUINode()
       node.setParent(this.stage)
       const burstManager = node.addComponent(BurstManager)
-      promise.push(burstManager.init(bursts));
+      promise.push(burstManager.init(bursts))
       DataManager.Instance.bursts.push(burstManager)
     }
 
-    await Promise.all(promise);
+    await Promise.all(promise)
   }
 
   async generateSpikes() {
-    const promise = [];
-    for(let i = 0; i < this.level.spikes.length; i++){
-      const spikes = this.level.spikes[i];
+    const promise = []
+    for (let i = 0; i < this.level.spikes.length; i++) {
+      const spikes = this.level.spikes[i]
       const node = createUINode()
       node.setParent(this.stage)
       const spikestManager = node.addComponent(SpikesManager)
-      promise.push(spikestManager.init(spikes));
+      promise.push(spikestManager.init(spikes))
       DataManager.Instance.spikes.push(spikestManager)
     }
 
-    await Promise.all(promise);
+    await Promise.all(promise)
   }
 
-  async generateSmoke(x:number,y:number,direction:DIRECTION_ENUM){
-    const item = DataManager.Instance.smoke.find(smoke=>smoke.state === ENTITY_STATE_ENUM.DEATH)
-    if(item){
+  async generateSmoke(x: number, y: number, direction: DIRECTION_ENUM) {
+    const item = DataManager.Instance.smoke.find(smoke => smoke.state === ENTITY_STATE_ENUM.DEATH)
+    if (item) {
       console.log('smoke pool')
       item.node.active = true
-      item.x = x;
-      item.y = y;
-      item.direction = direction;
+      item.x = x
+      item.y = y
+      item.direction = direction
       item.state = ENTITY_STATE_ENUM.IDLE
-      item.node.setPosition(x * TILE_WIDTH - TILE_WIDTH * 1.5, - y * TILE_HEIGHT + TILE_HEIGHT * 1.5)
-    }else{
+      item.node.setPosition(x * TILE_WIDTH - TILE_WIDTH * 1.5, -y * TILE_HEIGHT + TILE_HEIGHT * 1.5)
+    } else {
       const smoke = createUINode()
       smoke.setParent(this.smokeLayer)
       const smokeManager = smoke.addComponent(SmokeManager)
@@ -166,22 +171,22 @@ export class BattleManager extends Component {
         y,
         direction,
         state: ENTITY_STATE_ENUM.IDLE,
-        type:ENTITY_TYPE_ENUM.SMOKE
+        type: ENTITY_TYPE_ENUM.SMOKE,
       })
-      DataManager.Instance.smoke.push(smokeManager);
+      DataManager.Instance.smoke.push(smokeManager)
     }
   }
 
-  generateSmokeLayer(){
+  generateSmokeLayer() {
     this.smokeLayer = createUINode()
     this.smokeLayer.setParent(this.stage)
   }
 
-  checkArrived(){
-    const {x:playerX, y: playerY} = DataManager.Instance.player;
-    const {x:doorX, y: doorY, state:doorState} = DataManager.Instance.door
-    if(playerX === doorX && playerY === doorY && doorState === ENTITY_STATE_ENUM.DEATH){
-      EventManager.Instance.emit(EVENT_ENUM.NEXT_LEVEL);
+  checkArrived() {
+    const { x: playerX, y: playerY } = DataManager.Instance.player
+    const { x: doorX, y: doorY, state: doorState } = DataManager.Instance.door
+    if (playerX === doorX && playerY === doorY && doorState === ENTITY_STATE_ENUM.DEATH) {
+      EventManager.Instance.emit(EVENT_ENUM.NEXT_LEVEL)
     }
   }
 
