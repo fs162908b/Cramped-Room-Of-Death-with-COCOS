@@ -1,5 +1,5 @@
 import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame } from 'cc'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, Event_ENUM } from 'db://assets/Enums'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from 'db://assets/Enums'
 import EventManager from 'db://assets/Runtime/EventManager'
 import DataManager from 'db://assets/Runtime/DataManager'
 import { EntityManager } from 'db://assets/Base/EntityManager'
@@ -17,12 +17,12 @@ export class BurstManager extends EntityManager {
     const transform = this.node.getComponent(UITransform)
     transform.setContentSize(TILE_WIDTH, TILE_HEIGHT)
 
-    EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onBurst, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onBurst, this)
   }
 
   onDestroy(): void {
     super.onDestroy()
-    EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onBurst)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onBurst)
   }
 
   update() {
@@ -38,7 +38,7 @@ export class BurstManager extends EntityManager {
     } else if (this.state === ENTITY_STATE_ENUM.ATTACK) {
       this.state = ENTITY_STATE_ENUM.DEATH
       if (this.x === playerX && this.y === playerY) {
-        EventManager.Instance.emit(Event_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.AIRDEATH)
+        EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.AIRDEATH)
       }
     }
   }

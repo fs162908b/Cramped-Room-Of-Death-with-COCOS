@@ -1,5 +1,5 @@
 import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame } from 'cc'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, Event_ENUM } from 'db://assets/Enums'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from 'db://assets/Enums'
 import EventManager from 'db://assets/Runtime/EventManager'
 import DataManager from 'db://assets/Runtime/DataManager'
 import { WoodenSkeletonStateMachine } from './WoodenSkeletonStateMachine'
@@ -15,14 +15,14 @@ export class WoodenSkeletonManager extends EnemyManager {
     super.init(params)
 
 
-    EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onAttack, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack, this)
 
 
   }
 
   onDestroy(): void {
     super.onDestroy()
-    EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onAttack)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack)
   }
 
 
@@ -37,7 +37,7 @@ export class WoodenSkeletonManager extends EnemyManager {
       playerState !== ENTITY_STATE_ENUM.AIRDEATH
     ) {
       this.state = ENTITY_STATE_ENUM.ATTACK
-      EventManager.Instance.emit(Event_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
+      EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
     } else {
       this.state = ENTITY_STATE_ENUM.IDLE
     }

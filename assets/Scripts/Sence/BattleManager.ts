@@ -9,7 +9,6 @@ import {
   ENTITY_STATE_ENUM,
   ENTITY_TYPE_ENUM,
   EVENT_ENUM,
-  Event_ENUM,
   SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
 } from 'db://assets/Enums'
 import EventManager from '../../Runtime/EventManager'
@@ -19,12 +18,14 @@ import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { BurstManager } from '../Burst/BurstManager'
 import { SpikesManager } from '../Spikes/SpikesManager'
+import { SmokeManager } from '../Smoke/SmokeManager'
 const { ccclass, property } = _decorator
 
 @ccclass('BattleManager')
 export class BattleManager extends Component {
   level: ILevel
   stage: Node
+  private smokeLayer:Node
 
   start() {
     this.generateStage()
@@ -33,13 +34,13 @@ export class BattleManager extends Component {
 
   protected onLoad(): void {
     DataManager.Instance.levelIndex = 1;
-    EventManager.Instance.on(Event_ENUM.NEXT_LEVEL, this.nextLevel, this)
-    EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
-
+    EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
+    EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
   }
 
   protected onDestroy(): void {
-    EventManager.Instance.off(Event_ENUM.NEXT_LEVEL, this.nextLevel)
+    EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
   }
 
   initLevel() {
@@ -56,6 +57,7 @@ export class BattleManager extends Component {
       this.generateTileMap()
       this.generateBurst()
       this.generateDoor()
+      this.generateSmokeLayer()
       this.generateSpikes()
       this.generateEnemies()
       this.generatePlayer()
@@ -90,7 +92,7 @@ export class BattleManager extends Component {
     const playerManager = player.addComponent(PlayerManager)
     await playerManager.init(this.level.player)
     DataManager.Instance.player = playerManager
-    EventManager.Instance.emit(Event_ENUM.PLAYER_BORN, true)
+    EventManager.Instance.emit(EVENT_ENUM.PLAYER_BORN, true)
   }
 
   async generateEnemies() {
@@ -143,6 +145,36 @@ export class BattleManager extends Component {
     }
 
     await Promise.all(promise);
+  }
+
+  async generateSmoke(x:number,y:number,direction:DIRECTION_ENUM){
+    const item = DataManager.Instance.smoke.find(smoke=>smoke.state === ENTITY_STATE_ENUM.DEATH)
+    if(item){
+      console.log('smoke pool')
+      item.node.active = true
+      item.x = x;
+      item.y = y;
+      item.direction = direction;
+      item.state = ENTITY_STATE_ENUM.IDLE
+      item.node.setPosition(x * TILE_WIDTH - TILE_WIDTH * 1.5, - y * TILE_HEIGHT + TILE_HEIGHT * 1.5)
+    }else{
+      const smoke = createUINode()
+      smoke.setParent(this.smokeLayer)
+      const smokeManager = smoke.addComponent(SmokeManager)
+      await smokeManager.init({
+        x,
+        y,
+        direction,
+        state: ENTITY_STATE_ENUM.IDLE,
+        type:ENTITY_TYPE_ENUM.SMOKE
+      })
+      DataManager.Instance.smoke.push(smokeManager);
+    }
+  }
+
+  generateSmokeLayer(){
+    this.smokeLayer = createUINode()
+    this.smokeLayer.setParent(this.stage)
   }
 
   checkArrived(){

@@ -1,5 +1,5 @@
-import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame } from 'cc'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, Event_ENUM } from 'db://assets/Enums'
+import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame, input } from 'cc'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM} from 'db://assets/Enums'
 import EventManager from 'db://assets/Runtime/EventManager'
 import { PlayerStateMachine } from 'db://assets/Scripts/Player/PlayerStateMachine'
 import { EntityManager } from 'db://assets/Base/EntityManager'
@@ -23,14 +23,14 @@ export class PlayerManager extends EntityManager {
     super.init(params)
     this.targetX = this.x
     this.targetY = this.y
-    EventManager.Instance.on(Event_ENUM.PLAYER_CTRL, this.inputHandle, this)
-    EventManager.Instance.on(Event_ENUM.ATTACK_PLAYER, this.onDead, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
+    EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
   }
 
   onDestroy() {
     super.onDestroy()
-    EventManager.Instance.off(Event_ENUM.PLAYER_CTRL, this.inputHandle)
-    EventManager.Instance.off(Event_ENUM.ATTACK_PLAYER, this.onDead)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_CTRL, this.inputHandle)
+    EventManager.Instance.off(EVENT_ENUM.ATTACK_PLAYER, this.onDead)
   }
 
   update() {
@@ -54,7 +54,7 @@ export class PlayerManager extends EntityManager {
       this.isMoving = false
       this.x = this.targetX
       this.y = this.targetY
-      EventManager.Instance.emit(Event_ENUM.PLAYER_MOVE_END)
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
     }
   }
 
@@ -72,8 +72,8 @@ export class PlayerManager extends EntityManager {
       return
     const id = this.willAttack(inputDirection)
     if (id) {
-      EventManager.Instance.emit(Event_ENUM.ATTACK_ENEMY, id)
-      EventManager.Instance.emit(Event_ENUM.DOOR_OPEN)
+      EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, id)
+      EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)
       return
     }
     if (this.willBlock(inputDirection)) {
@@ -86,15 +86,20 @@ export class PlayerManager extends EntityManager {
     if (inputDirection === CONTROLLER_ENUM.TOP) {
       this.targetY -= 1
       this.isMoving = true
+      this.showSmoke(DIRECTION_ENUM.TOP);
     } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
       this.targetY += 1
       this.isMoving = true
+      this.showSmoke(DIRECTION_ENUM.BOTTOM);
+
     } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
       this.targetX -= 1
       this.isMoving = true
+      this.showSmoke(DIRECTION_ENUM.LEFT);
     } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
       this.targetX += 1
       this.isMoving = true
+      this.showSmoke(DIRECTION_ENUM.RIGHT);
     } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
       if (this.direction == DIRECTION_ENUM.TOP) {
         this.direction = DIRECTION_ENUM.LEFT
@@ -106,7 +111,7 @@ export class PlayerManager extends EntityManager {
         this.direction = DIRECTION_ENUM.TOP
       }
       this.state = ENTITY_STATE_ENUM.TURNLEFT
-      EventManager.Instance.emit(Event_ENUM.PLAYER_MOVE_END)
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
     } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
       if (this.direction == DIRECTION_ENUM.TOP) {
         this.direction = DIRECTION_ENUM.RIGHT
@@ -118,8 +123,12 @@ export class PlayerManager extends EntityManager {
         this.direction = DIRECTION_ENUM.TOP
       }
       this.state = ENTITY_STATE_ENUM.TURNRIGHT
-      EventManager.Instance.emit(Event_ENUM.PLAYER_MOVE_END)
+      EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
     }
+  }
+
+  showSmoke(type: DIRECTION_ENUM){
+    EventManager.Instance.emit(EVENT_ENUM.SHOW_SMOKE,this.x,this.y,type)
   }
 
   willAttack(type: CONTROLLER_ENUM) {

@@ -3,7 +3,7 @@ import ResourceManager from '../Runtime/ResourceManager'
 import { StateMachine } from './StateMachine'
 import { sortSpriteFrame } from '../Utils'
 
-const ANIMATION_SPEED = 1 / 8
+export const ANIMATION_SPEED = 1 / 8
 
 /**
  * 1.需要知道aimationClip
@@ -15,6 +15,7 @@ export default class State {
     private fsm: StateMachine,
     private path: string,
     private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
+    private speed:number = ANIMATION_SPEED
   ) {
     this.init()
   }
@@ -29,7 +30,7 @@ export default class State {
     const track = new animation.ObjectTrack() // 创建一个向量轨道
     track.path = new animation.TrackPath().toComponent(Sprite).toProperty('spriteFrame') // 指定轨道路径，即指定目标对象为 "Foo" 子节点的 "position" 属性
     const frames: [number, SpriteFrame][] = sortSpriteFrame(spriteFrames).map((item, index) => {
-      return [index * ANIMATION_SPEED, item]
+      return [index * this.speed, item]
     })
 
     track.channel.curve.assignSorted(frames)
@@ -37,7 +38,7 @@ export default class State {
     this.animationClip.addTrack(track)
     this.animationClip.name = this.path
     this.animationClip.wrapMode = this.wrapMode
-    this.animationClip.duration = frames.length * ANIMATION_SPEED
+    this.animationClip.duration = frames.length * this.speed
   }
   run() {
     if (this.fsm.animationComponent?.defaultClip?.name === this.animationClip.name) {

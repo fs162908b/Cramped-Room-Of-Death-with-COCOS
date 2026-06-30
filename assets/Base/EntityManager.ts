@@ -5,7 +5,6 @@ import {
   DIRECTION_ORDER_ENUM,
   ENTITY_STATE_ENUM,
   ENTITY_TYPE_ENUM,
-  Event_ENUM,
   PARAMS_NAME_ENUM,
 } from 'db://assets/Enums'
 import EventManager from 'db://assets/Runtime/EventManager'

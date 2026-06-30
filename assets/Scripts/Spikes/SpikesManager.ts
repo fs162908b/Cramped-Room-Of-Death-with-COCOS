@@ -6,7 +6,6 @@ import {
   ENTITY_STATE_ENUM,
   ENTITY_TYPE_ENUM,
   EVENT_ENUM,
-  Event_ENUM,
   PARAMS_NAME_ENUM,
   SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
 } from 'db://assets/Enums'
@@ -62,7 +61,7 @@ export class SpikesManager extends Component {
     this.totalCount = SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM[this.type]
     this.count = params.count
 
-    EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onLoop, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onLoop, this)
   }
 
   update() {
@@ -83,7 +82,7 @@ export class SpikesManager extends Component {
   }
 
   onDestroy() {
-    EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onLoop)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onLoop)
   }
 
   onAttack() {

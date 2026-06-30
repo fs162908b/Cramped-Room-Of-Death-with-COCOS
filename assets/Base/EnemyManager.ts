@@ -1,5 +1,5 @@
 import { _decorator, Component, Sprite, UITransform, Animation, AnimationClip, animation, SpriteFrame } from 'cc'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, Event_ENUM } from 'db://assets/Enums'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from 'db://assets/Enums'
 import EventManager from 'db://assets/Runtime/EventManager'
 import { PlayerStateMachine } from 'db://assets/Scripts/Player/PlayerStateMachine'
 import { EntityManager } from 'db://assets/Base/EntityManager'
@@ -12,18 +12,18 @@ export class EnemyManager extends EntityManager {
   async init(params: IEntity) {
     super.init(params)
 
-    EventManager.Instance.on(Event_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
-    EventManager.Instance.on(Event_ENUM.PLAYER_BORN, this.onChangeDirection, this)
-    EventManager.Instance.on(Event_ENUM.ATTACK_ENEMY, this.onDead, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
+    EventManager.Instance.on(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection, this)
+    EventManager.Instance.on(EVENT_ENUM.ATTACK_ENEMY, this.onDead, this)
 
     this.onChangeDirection(true)
   }
 
   onDestroy(): void {
     super.onDestroy()
-    EventManager.Instance.off(Event_ENUM.PLAYER_MOVE_END, this.onChangeDirection)
-    EventManager.Instance.off(Event_ENUM.PLAYER_BORN, this.onChangeDirection)
-    EventManager.Instance.off(Event_ENUM.ATTACK_ENEMY, this.onDead)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection)
+    EventManager.Instance.off(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection)
+    EventManager.Instance.off(EVENT_ENUM.ATTACK_ENEMY, this.onDead)
   }
 
   onChangeDirection(isInited: boolean = false) {
